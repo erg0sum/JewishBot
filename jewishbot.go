@@ -4,11 +4,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type GlossaryEntry struct {
 	Transliterations []string `json:"transliterations"`
 	Description      string   `json:"description"`
+}
+
+func StripString(in string) string {
+	// convert all strings to lowercase
+	in = strings.ToLower(in)
+	// strip out nikkudot
+	var out string
+	for _, r := range in {
+		if !(r >= '\u0591' && r < 'א') {
+			out += string(r)
+		}
+	}
+	return out
 }
 
 /*

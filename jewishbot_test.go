@@ -2,7 +2,8 @@ package main
 
 import "testing"
 
-var testFile string = "test/glossary.json"
+const testFile = "test/glossary.json"
+const SHALOM = "שָׁלוֹם"
 
 func TestReadGlossaryNoFile(t *testing.T) {
 	var _, err = ReadGlossary("")
@@ -38,7 +39,7 @@ func TestReadEnglishEntry(t *testing.T) {
 
 func TestReadHebrewEntry(t *testing.T) {
 	var glossary, _ = ReadGlossary(testFile)
-	if val, ok := glossary["שָׁלוֹם"]; !ok {
+	if val, ok := glossary[SHALOM]; !ok {
 		t.Error("שָׁלוֹם should be in glossary")
 	} else {
 		if val.Description != "Peace" {
@@ -48,6 +49,13 @@ func TestReadHebrewEntry(t *testing.T) {
 		if len(val.Transliterations) == 0 {
 			t.Error("Transliterations for שָׁלוֹם should not be empty")
 		}
+	}
+}
+
+func TestStripStringWithHebrew(t *testing.T) {
+	s := StripString(SHALOM)
+	if s != "שלום" {
+		t.Error("Unable to strip nikkudot from shalom")
 	}
 }
 
