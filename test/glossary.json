@@ -1,4 +1,14 @@
 {
-    "test": "A test string",
-    "שָׁלוֹם": "Peace"
+    "test": {
+        "transliterations": [], 
+        "description": "A test string"
+    }, 
+    "שָׁלוֹם": {
+        "transliterations": ["shalom"],
+        "description": "Peace"
+    },
+    "בית מידרש": {
+        "transliterations": ["beis medrish", "beis medrash", "beit midrish", "beit midrash"],
+        "description": "study hall (lit. house of expounding)"
+    }
 }

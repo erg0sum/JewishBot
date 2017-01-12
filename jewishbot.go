@@ -6,11 +6,16 @@ import (
 	"os"
 )
 
+type GlossaryEntry struct {
+	Transliterations []string `json:"transliterations"`
+	Description      string   `json:"description"`
+}
+
 /*
 A bot for /r/judaism
 */
-func ReadGlossary(filename string) (map[string]string, error) {
-	var glossary = make(map[string]string)
+func ReadGlossary(filename string) (map[string]GlossaryEntry, error) {
+	var glossary = make(map[string]GlossaryEntry)
 	if glossaryFile, err := os.Open(filename); err != nil {
 		return nil, err
 	} else {
