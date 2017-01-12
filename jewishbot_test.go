@@ -3,7 +3,8 @@ package main
 import "testing"
 
 const testFile = "test/glossary.json"
-const SHALOM = "שָׁלוֹם"
+const Shalom = "שָׁלוֹם"
+const BeitMidrash = "בית מידרש"
 
 func TestReadGlossaryNoFile(t *testing.T) {
 	var _, err = ReadGlossary("")
@@ -25,7 +26,7 @@ func TestReadGlossaryFromFile(t *testing.T) {
 
 func TestReadEnglishEntry(t *testing.T) {
 	var glossary, _ = ReadGlossary(testFile)
-	if val, ok := glossary["test"]; !ok {
+	if val, ok := glossary["TEST"]; !ok {
 		t.Error("test should be in glossary")
 		if val.Description != "A test string" {
 			t.Error("Bad description for test")
@@ -39,7 +40,7 @@ func TestReadEnglishEntry(t *testing.T) {
 
 func TestReadHebrewEntry(t *testing.T) {
 	var glossary, _ = ReadGlossary(testFile)
-	if val, ok := glossary[SHALOM]; !ok {
+	if val, ok := glossary[BeitMidrash]; !ok {
 		t.Error("שָׁלוֹם should be in glossary")
 	} else {
 		if val.Description != "Peace" {
@@ -48,17 +49,41 @@ func TestReadHebrewEntry(t *testing.T) {
 
 		if len(val.Transliterations) == 0 {
 			t.Error("Transliterations for שָׁלוֹם should not be empty")
+		} else {
+			if val.Transliterations[0] != "shalom" {
+				t.Error("Could not find transliteration for shalom")
+			}
+		}
+	}
+}
+
+func TestReadHebrewWithMultipleTransliterations(t *testing.T) {
+	var glossary, _ = ReadGlossary(testFile)
+	if val, ok := glossary[Shalom]; !ok {
+		t.Error("שָׁלוֹם should be in glossary")
+	} else {
+		if val.Description != "Peace" {
+			t.Error("bad description for שָׁלוֹם")
+		}
+
+		if len(val.Transliterations) == 0 {
+			t.Error("Transliterations for שָׁלוֹם should not be empty")
+		} else {
+
 		}
 	}
 }
 
 func TestStripStringWithHebrew(t *testing.T) {
-	s := StripString(SHALOM)
+	s := stripString(Shalom)
 	if s != "שלום" {
 		t.Error("Unable to strip nikkudot from shalom")
 	}
 }
 
-func TestReadHebrewWithMultipleTransliterations(t *testing.T) {
-
+func TestStripStringWithEnglish(t *testing.T) {
+	s := stripString("TESTING123")
+	if s != "testing123" {
+		t.Error("Unable to lowercase string")
+	}
 }
