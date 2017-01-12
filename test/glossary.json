@@ -1,8 +1,4 @@
 {
-  "EN_US": {
-    "test": "A test string"
-  },
-  "HE_IL": {
+    "test": "A test string",
     "שָׁלוֹם": "Peace"
-  }
 }
