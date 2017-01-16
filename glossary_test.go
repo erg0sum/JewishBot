@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 const testFile = "test/glossary.json"
 const Shalom = "שָׁלוֹם"
@@ -40,7 +42,7 @@ func TestReadEnglishEntry(t *testing.T) {
 
 func TestReadHebrewEntry(t *testing.T) {
 	var glossary, _ = ReadGlossary(testFile)
-	if val, ok := glossary[BeitMidrash]; !ok {
+	if val, ok := glossary[Shalom]; !ok {
 		t.Error("שָׁלוֹם should be in glossary")
 	} else {
 		if val.Description != "Peace" {
@@ -59,17 +61,11 @@ func TestReadHebrewEntry(t *testing.T) {
 
 func TestReadHebrewWithMultipleTransliterations(t *testing.T) {
 	var glossary, _ = ReadGlossary(testFile)
-	if val, ok := glossary[Shalom]; !ok {
-		t.Error("שָׁלוֹם should be in glossary")
+	if val, ok := glossary[BeitMidrash]; !ok {
+		t.Errorf("%s should be in glossary", BeitMidrash)
 	} else {
-		if val.Description != "Peace" {
-			t.Error("bad description for שָׁלוֹם")
-		}
-
-		if len(val.Transliterations) == 0 {
-			t.Error("Transliterations for שָׁלוֹם should not be empty")
-		} else {
-
+		if len(val.Transliterations) != 4 {
+			t.Errorf("Transliterations for %s should not be empty", BeitMidrash)
 		}
 	}
 }

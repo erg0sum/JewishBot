@@ -1,65 +1,47 @@
 package main
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
+	"log"
 	"os"
-	"strings"
+
+	"golang.org/x/oauth2"
 )
 
-// GlossaryEntry is an entry in the Glossary
-type GlossaryEntry struct {
-	Transliterations []string `json:"transliterations"`
-	Description      string   `json:"description"`
-	MatchValues      []string `json:"-"`
-}
-
-//Glossary is the read in glossary
-type Glossary map[string]GlossaryEntry
-
-func stripString(in string) string {
-	// convert all strings to lowercase
-	in = strings.ToLower(in)
-	// strip out nikkudot
-	var out string
-	for _, r := range in {
-		if !(r >= '\u0591' && r < 'א') {
-			out += string(r)
-		}
+func authenticateWithReddit() {
+	ctx := context.Background()
+	conf := &oauth2.Config{
+		ClientID:     "",
+		ClientSecret: "1nEYXm0wWMPnJE0wdM9crYwStug",
+		Scopes:       []string{"privatemessages", "read"},
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  "https://provider.com/o/oauth2/auth",
+			TokenURL: "https://provider.com/o/oauth2/token",
+		},
 	}
-	return out
-}
 
-// ReadGlossary reads a glossary file
-// Glossary file has the format
-// {
-//	"term": {"transliterations":[], "description": "..."}
-//}
-func ReadGlossary(filename string) (Glossary, error) {
-	var glossary = make(Glossary)
-	glossaryFile, err := os.Open(filename)
+	// Redirect user to consent page to ask for permission
+	// for the scopes specified above.
+	url := conf.AuthCodeURL("state", oauth2.AccessTypeOffline)
+	fmt.Printf("Visit the URL for the auth dialog: %v", url)
+
+	// Use the authorization code that is pushed to the redirect
+	// URL. Exchange will do the handshake to retrieve the
+	// initial access token. The HTTP Client returned by
+	// conf.Client will refresh the token as necessary.
+	var code string
+	if _, err := fmt.Scan(&code); err != nil {
+		log.Fatal(err)
+	}
+	tok, err := conf.Exchange(ctx, code)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
-	jsonParser := json.NewDecoder(glossaryFile)
-
-	if err = jsonParser.Decode(&glossary); err != nil {
-		return nil, err
-	}
-
-	for key, entry := range glossary {
-		var matchValues = make([]string, 0)
-		matchValues = append(matchValues, stripString(key))
-		for _, transliteration := range entry.Transliterations {
-			matchValues = append(matchValues, stripString(transliteration))
-		}
-		entry.MatchValues = matchValues
-	}
-
-	return glossary, nil
+	client := conf.Client(ctx, tok)
+	client.Get("...")
 }
-
 func main() {
 	if glossary, err := ReadGlossary(os.Args[1]); err != nil {
 		fmt.Printf("Error reading glossary: %s\n", err.Error())
